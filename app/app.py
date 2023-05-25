@@ -30,7 +30,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def index():
-    return 'Index Page'
+    return render_template('map.html')
 
 @app.route("/WeatherData")
 def weather_data():
