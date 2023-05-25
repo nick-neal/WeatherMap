@@ -34,7 +34,7 @@ def index():
 
 @app.route("/WeatherData")
 def weather_data():
-    return 'Weather Data'
+    return modules.grab_weather_alerts()
 
 if __name__ == '__main__':
     if APP_ENV == 'PROD':
