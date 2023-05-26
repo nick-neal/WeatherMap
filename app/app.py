@@ -32,7 +32,7 @@ app = Flask(__name__)
 def index():
     return render_template('map.html')
 
-@app.route("/WeatherData")
+@app.route("/WeatherAlerts")
 def weather_data():
     return modules.grab_weather_alerts()
 

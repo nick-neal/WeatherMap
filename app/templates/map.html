@@ -1,6 +1,96 @@
 <html>
     <head>
+
+
         <title>Weather Alerts Map</title>
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+        <style>
+            #map {
+                height: 100%;
+                width: 100%;
+
+            }
+        </style>
     </head>
-    <body></body>
+    <body>
+        <div id="map"></div>
+        <script>
+
+            function getWeatherAlerts(map) {
+                fetch('/WeatherAlerts')
+                .then((response) => response.json())
+                .then((responseData) => {
+                    console.log(responseData);
+                    for (var i in responseData.alerts) {
+                        alert = responseData.alerts[i];
+                        geometry = [];
+
+                        for (var ii in alert['geometry']['coordinates'][0]) {
+                            coordinates = alert['geometry']['coordinates'][0][ii];
+                            geometry.push([coordinates[1],coordinates[0]]);
+                        }
+                        
+                        var color = 'red';
+                        
+                        switch(alert.event) {
+                            case 'Severe Thunderstorm Warning':
+                                color = 'yellow';
+                                break;
+                            
+                            case 'Flood Warning':
+                                color = 'blue';
+                                break;
+                            
+                            case 'Flash Flood Warning':
+                                color = 'blue';
+                                break;
+                        }
+
+                        var popup = '<b>' + alert['event'] + '</b> - ' + alert['severity'] + '<br /><br />' +
+                                    alert['effective'] + ' to ' + alert['expires'] + '<br /><br />' +
+                                    alert['headline'] + '<br /><br />' +
+                                    alert['description'];
+
+                        L.polygon(geometry,{color: color})
+                        .bindPopup(popup)
+                        .addTo(map);
+                    }
+                }).catch(function(err) {
+                    console.log("Opps, Something went wrong!", err);
+                })
+            }
+
+            var map = L.map('map').setView([40.340, -98.387], 5);
+
+            var tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            }).addTo(map);
+
+            getWeatherAlerts(map);
+            
+            /*var marker = L.marker([39.65,-105.06]).addTo(map);
+            console.log(marker);
+
+            var polygon = L.polygon([
+                [-105.06, 39.65],
+                [-105.08, 39.67],
+                [-105.05, 39.67],
+                [-105.06, 39.68],
+                [-105.05, 39.69],
+                [-105.05, 39.769999999999996],
+                [-104.92, 39.769999999999996],
+                [-104.91, 39.669999999999995],
+                [-104.97, 39.659999899999995],
+                [-105, 39.669999999999995],
+                [-105.01, 39.659999899999995],
+                [-105.01, 39.67999999999999],
+                [-105.02000000000001, 39.659999899999995]
+            ],{color: 'red'}).addTo(map);*/
+
+            
+
+        </script>
+    </body>
 </html>
